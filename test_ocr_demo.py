@@ -21,7 +21,7 @@ from pdf import improvingOCR # for evaluation
 from dinglehop.word_error_rate import *
 from dinglehop.character_error_rate import *
 from lang_confidence.lang_id import *
-from nltk.corpus import wordnet
+from nltk.corpus import words
 #import enchant
 #from spellchecker import SpellChecker (incompatible with python version 3)
 
@@ -182,7 +182,7 @@ def main():
 					continue
 				#if spell[word]:
 				#if d.check(word):
-				if wordnet.synsets(word):
+				if word in words.words():
 					W_good +=1
 				else:
 					misspelled_list.append(word)
