@@ -185,7 +185,7 @@ def main():
 					continue
 				#if spell[word]:
 				#if d.check(word):
-				if word in words.words() or word.isnumeric():
+				if word.lower() in words.words() or word.isnumeric():
 					W_good +=1
 				else:
 					misspelled_list.append(word)
