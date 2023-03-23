@@ -21,7 +21,8 @@ from pdf import improvingOCR # for evaluation
 from dinglehop.word_error_rate import *
 from dinglehop.character_error_rate import *
 from lang_confidence.lang_id import *
-import enchant
+from nltk.corpus import wordnet
+#import enchant
 #from spellchecker import SpellChecker (incompatible with python version 3)
 
 
@@ -167,7 +168,7 @@ def main():
 			st.write("\n\n")
 			# TODO: resolve enchant issues. pyspellchecker is ok for now
 			#spell = SpellChecker()
-			d = enchant.Dict("en_US")
+			#d = enchant.Dict("en_US")
 			W_good = 0
 			W_all = 1 # initialize to 1 to avoid dividing by 0
 
@@ -180,7 +181,8 @@ def main():
 				if word.isspace(): # skip whitespace
 					continue
 				#if spell[word]:
-				if d.check(word):
+				#if d.check(word):
+				if wordnet.synsets(word):
 					W_good +=1
 				else:
 					misspelled_list.append(word)
