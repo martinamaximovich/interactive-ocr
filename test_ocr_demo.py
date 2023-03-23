@@ -8,7 +8,7 @@ import os
 # file processing packages
 import base64
 from pdf2image import convert_from_path, convert_from_bytes
-from PyPDF2 import PdfFileReader
+from PyPDF2 import PdfReader
 import tempfile
 
 # ocr packages
@@ -277,7 +277,7 @@ def count_num_pages(file):
 	"""
 	Return number of pages in a pdf
 	"""
-	pdfReader = PdfFileReader(file)
+	pdfReader = PdfReader(file)
 	return pdfReader.numPages
 
 def get_images_from_upload(file, start: int, end: int):
