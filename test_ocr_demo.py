@@ -56,42 +56,42 @@ def main():
 	# File selection UI
 	start, end, uploaded_file = render_file_select_sidebar()
 	
-	st.sidebar.title("Preprocessing Methods")
-	thresh_method = st.sidebar.radio("Thresholding Method", THRESHOLDING_METHODS)
-	if thresh_method == "Simple" or thresh_method == "None": # TODO: diff logic
-		thresh_val = st.sidebar.slider("Threshold Value", value=127, min_value=50, max_value=300, help=THRESHOLD_HELP)
-		max_val = st.sidebar.slider("Maximum Value", value=255, min_value=100, max_value=1000, help=MAXTHRESHOLD_HELP)
-	denoise_selection = st.sidebar.radio("Denoising Methods", DENOISING_METHODS)
+	# st.sidebar.title("Preprocessing Methods")
+	# thresh_method = st.sidebar.radio("Thresholding Method", THRESHOLDING_METHODS)
+	# if thresh_method == "Simple" or thresh_method == "None": # TODO: diff logic
+	# 	thresh_val = st.sidebar.slider("Threshold Value", value=127, min_value=50, max_value=300, help=THRESHOLD_HELP)
+	# 	max_val = st.sidebar.slider("Maximum Value", value=255, min_value=100, max_value=1000, help=MAXTHRESHOLD_HELP)
+	# denoise_selection = st.sidebar.radio("Denoising Methods", DENOISING_METHODS)
 
 
-	st.sidebar.title("Tesseract Parameters")
-	st.sidebar.markdown("Have no idea what these options *actually* mean? See [Resources](#resources)", unsafe_allow_html=True)
-	psm = st.sidebar.slider("Page Segmentation Mode", 0, 13, value=1, help=PSM_HELP)
-	oem = st.sidebar.slider("OCR Engine Mode", 0, 3, value=1, help=OEM_HELP)
-	tess_config = get_tess_config(psm, oem)
+	# st.sidebar.title("Tesseract Parameters")
+	# st.sidebar.markdown("Have no idea what these options *actually* mean? See [Resources](#resources)", unsafe_allow_html=True)
+	# psm = st.sidebar.slider("Page Segmentation Mode", 0, 13, value=1, help=PSM_HELP)
+	# oem = st.sidebar.slider("OCR Engine Mode", 0, 3, value=1, help=OEM_HELP)
+	#tess_config = get_tess_config(psm, oem)
 
 	if uploaded_file is None or start == "" or end == "":
 		render_landing_layout()
 
 	else: # use uploaded a file
-		main_col1, main_col2 = st.columns(2)
-		main_col1.subheader("Uploaded File")
+		#main_col1, main_col2 = st.columns(2)
+		st.subheader("Uploaded File")
 		
-		with main_col1.expander("File", expanded=True):
+		with st.expander("File", expanded=True):
 			images = get_images_from_upload(uploaded_file, start, end)
 			st.image(images)
 		
 
 		# attempt to extract text
-		main_col2.subheader("Preprocessed Image")
-		with main_col2.expander("Preprocessing Results", expanded=True):
-			if thresh_method == "Simple":
-				imgs = grayscale_images(start, end, images, thresh_val, max_val)
-			elif thresh_method == "None":
-				imgs = no_threshold_images(start, end, images)
-			imgs = PIL_to_np(start, end, imgs)
-			imgs = denoise_images(start, end, imgs, denoise_selection)
-			st.image(imgs)
+		# main_col2.subheader("Preprocessed Image")
+		# with main_col2.expander("Preprocessing Results", expanded=True):
+		# 	if thresh_method == "Simple":
+		# 		imgs = grayscale_images(start, end, images, thresh_val, max_val)
+		# 	elif thresh_method == "None":
+		# 		imgs = no_threshold_images(start, end, images)
+		# 	imgs = PIL_to_np(start, end, imgs)
+		# 	imgs = denoise_images(start, end, imgs, denoise_selection)
+		# 	st.image(imgs)
 
 		st.markdown("---")
 
@@ -103,7 +103,7 @@ def main():
 			# refactor later
 			extracted_text = ""
 			for page_idx in range(start-1, end):
-				extracted_text += pytesseract.image_to_string(imgs[page_idx], config=tess_config, lang="eng")
+				extracted_text += pytesseract.image_to_string(images[page_idx], lang="eng")
 				if extracted_text == "":
 					st.info("No Tesseract output :( Try tweaking more parameters!")
 					break
@@ -153,7 +153,7 @@ def main():
 			# refactor later
 			result_df = pd.DataFrame()
 			for page_idx in range(start-1, end):
-				text1 = pytesseract.image_to_data(imgs[page_idx], config=tess_config, lang="eng", output_type='data.frame')
+				text1 = pytesseract.image_to_data(images[page_idx], lang="eng", output_type='data.frame')
 				text_data = text1[text1.conf != -1] # remove all rows with no confidence values
 				result_df = result_df.append(text_data[['conf', 'text']])
 			
@@ -295,16 +295,16 @@ def get_images_from_upload(file, start: int, end: int):
 	images = convert_from_path(tfile.name, first_page=start, last_page=end)
 	return images
 
-def get_tess_config(psm: int, oem: int):
-	"""
-	Returns formatted config for Tesseract
-	"""
-	# tessedit_char_whitelist=abcdefghijklmnopqrstuvwxyz, 0123456789.%
-	tess_config = "--psm " + str(psm)+ \
-		" --oem " + str(oem) + \
-		" -c " + \
-		"preserve_interword_spaces=1"
-	return tess_config
+# def get_tess_config(psm: int, oem: int):
+# 	"""
+# 	Returns formatted config for Tesseract
+# 	"""
+# 	# tessedit_char_whitelist=abcdefghijklmnopqrstuvwxyz, 0123456789.%
+# 	tess_config = "--psm " + str(psm)+ \
+# 		" --oem " + str(oem) + \
+# 		" -c " + \
+# 		"preserve_interword_spaces=1"
+# 	return tess_config
 
 def grayscale_images(start, end, images, thresh_val, max_val):
 	"""
@@ -427,14 +427,14 @@ def render_file_select_sidebar():
 			st.sidebar.error("Invalid page range")
 	return (start, end, uploaded_file)
 
-def render_preprocess_sidebar():
-	st.sidebar.title("Pre-Processing Parameters")
-	thresh_method = st.sidebar.radio("Thresholding Method", THRESHOLDING_METHODS)
-	if thresh_method == "Simple":
-		thresh_val = st.sidebar.slider("Threshold Value", value=127, min_value=50, max_value=300, help=THRESHOLD_HELP)
-		max_val = st.sidebar.slider("Maximum Value", value=255, min_value=100, max_value=1000, help=MAXTHRESHOLD_HELP)
-	denoise_selection = st.sidebar.radio("Denoising Methods", DENOISING_METHODS)
-	return (thresh_val, max_val, denoise_selection)
+# def render_preprocess_sidebar():
+# 	st.sidebar.title("Pre-Processing Parameters")
+# 	thresh_method = st.sidebar.radio("Thresholding Method", THRESHOLDING_METHODS)
+# 	if thresh_method == "Simple":
+# 		thresh_val = st.sidebar.slider("Threshold Value", value=127, min_value=50, max_value=300, help=THRESHOLD_HELP)
+# 		max_val = st.sidebar.slider("Maximum Value", value=255, min_value=100, max_value=1000, help=MAXTHRESHOLD_HELP)
+# 	denoise_selection = st.sidebar.radio("Denoising Methods", DENOISING_METHODS)
+# 	return (thresh_val, max_val, denoise_selection)
 
 if __name__ == '__main__':
     main()
