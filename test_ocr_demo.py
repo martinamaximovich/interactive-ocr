@@ -21,7 +21,7 @@ from pdf import improvingOCR # for evaluation
 from dinglehop.word_error_rate import *
 from dinglehop.character_error_rate import *
 from lang_confidence.lang_id import *
-# import enchant
+import enchant
 #from spellchecker import SpellChecker (incompatible with python version 3)
 
 
