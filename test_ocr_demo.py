@@ -22,6 +22,7 @@ from dinglehop.word_error_rate import *
 from dinglehop.character_error_rate import *
 from lang_confidence.lang_id import *
 from nltk.corpus import words
+import nltk
 nltk.download('words')
 
 #import enchant
