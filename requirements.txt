@@ -16,3 +16,4 @@ streamlit==1.15.2
 uniseg==0.7.2
 opencv-python-headless
 pyenchant
+nltk
